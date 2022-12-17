@@ -1,6 +1,3 @@
-from dotenv import load_dotenv
-load_dotenv()
-
 from chia.types.blockchain_format.program import Program
 from chia.util.condition_tools import parse_sexp_to_conditions, conditions_by_opcode
 from chia.types.condition_opcodes import ConditionOpcode
@@ -17,11 +14,8 @@ import threading
 def get_last_sync():
 	last_from_db = get_last_block_from_db()
 	if last_from_db == None:
-		# return 2170000, None # 2 days before NFT1 announcement
-		# -------------------------------------------------------------------------------------------------------------------------
-		print("WARNING: Testing mode, starting from very big height")
-		return 2203366, None
-		# -------------------------------------------------------------------------------------------------------------------------
+		return 2000000, None # 2170000 is 2 days before NFT1 announcement
+	
 	return last_from_db.height, last_from_db.header_hash
 
 
@@ -244,6 +238,7 @@ def main():
 			while synced_height < leaflet_height:
 				height_to_process = synced_height + 1
 				remote_prev_hash, hash_to_process, is_tx_block = get_remote_block_data_at_height(height_to_process)
+				
 				if synced_hash != remote_prev_hash:
 					print(f"Something is fishy at height {synced_height} - dropping block.")
 					print(synced_height, synced_hash, remote_prev_hash, height_to_process)
@@ -255,6 +250,7 @@ def main():
 					process_block(height_to_process, hash_to_process)
 				else:
 					add_object_to_db_now(SyncedBlock(height=height_to_process, header_hash=hash_to_process))
+
 				synced_height, synced_hash = height_to_process, hash_to_process
 		else:
 			print("Leaflet is somehow behind our height...")
