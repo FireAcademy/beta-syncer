@@ -234,6 +234,7 @@ def main():
 	while True:
 		if synced_height == leaflet_height:
 			time.sleep(5)
+			leaflet_height, leaflet_hash, leaflet_prev_hash = get_remote_sync()
 		elif synced_height < leaflet_height:
 			while synced_height < leaflet_height:
 				height_to_process = synced_height + 1
@@ -256,6 +257,7 @@ def main():
 			print("Leaflet is somehow behind our height...")
 			print("Sleeping 1 min; hopefully it will figure it out by the time I wake up")
 			time.sleep(60)
+			leaflet_height, leaflet_hash, leaflet_prev_hash = get_remote_sync()
 
 
 if __name__ == "__main__":
